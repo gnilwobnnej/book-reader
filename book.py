@@ -38,8 +38,8 @@ def create_vectorstore(chunks):
 
 '''creates the questions and answer with ollama
 uses mistral as the llm
-vectorstore.as_retriever turns the stored chunks into something ai can search k= is when a
-question is asked it will find the 4 most relevant chunks
+vectorstore.as_retriever turns the stored chunks into something ai can search k=x is when a
+question is asked it will find the x most relevant chunks more being more indepth it will be
 '''
 def create_qa_chain(vectorstore):
     llm = OllamaLLM(model="mistral")
