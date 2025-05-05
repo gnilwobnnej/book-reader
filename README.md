@@ -4,7 +4,7 @@ This program uses [Ollama](https://ollama.com/) <img src="https://ollama.com/pub
 In the example screenshots I used the book [Animal Farm by George Orwell](https://en.wikipedia.org/wiki/Animal_Farm)  :pig: (not included in the upload)
 
 Can be used to read other pdf's, it's looking for a file labled 'book.pdf', that can be changed on line 56: 
-'''python
+```python
     text = read_pdf("book.pdf")
-'''
+```
 
