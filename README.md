@@ -13,3 +13,10 @@ Can be used to read other pdf's, it's looking for a file labled 'book.pdf', that
     text = read_pdf("book.pdf")
 ```
 
+## UPDATE 5/16/2025
+
+1. Made the models constants so I can easliy go back and change them if I want to try other ones, this one is for bookgemma.py
+2. Made it so that you can choose the name of the pdf that you want.
+3. Made so you save the file as you want it and so that the text inputs and outputs are saved.
+4. 'this is a test.txt' is the test file that is used using gemma2 and the new format.
+5. Will need to try with other models. 
