@@ -29,6 +29,6 @@ Can be used to read other pdf's, it's looking for a file labled 'book.pdf', that
 3. have it so that users can save the text file of the conversation.
 
 ## TODO LIST
--[] fix it so that it doesn't save the chat first off and export save a separate chat
--[] update the gui so it looks better
--[] try a different book
+- [ ] fix it so that it doesn't save the chat first off and export save a separate chat
+- [ ] update the gui so it looks better
+- [ ] try a different book
