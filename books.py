@@ -57,17 +57,6 @@ def create_qa_chain(vectorstore):
     return RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
 
     
-#log interations uses timestamps to log each individual query
-def log_interaction(log_file, question, answer):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(f"[{timestamp}]\n")
-        f.write(f"You: {textwrap.fill(question, width=WRAP)}\n")
-        f.write("Llama: \n")
-        for paragraph in answer.split('\n'):
-            f.write(textwrap.fill(paragraph, width=WRAP) + "\n")
-        f.write("=" * WRAP + "\n")
-
 
 '''main class
 called when the app starts and sets up the GUI layout and widgets.
@@ -77,7 +66,6 @@ class PDFQAAPP:
         self.root= root
         self.root.title("Q&A with a Llama")
         self.qa_chain = None
-        self.log_file = None
         self.conversation = []
 
         self.setup_ui()
@@ -111,12 +99,30 @@ class PDFQAAPP:
         self.bottom_frame = tk.Frame(self.root)
         self.bottom_frame.pack(fill="x", side="bottom", padx=10, pady=(0,10))
 
-        self.question_entry = tk.Entry(self.bottom_frame, width=80)
-        self.question_entry.pack(side="left", fill="x", expand=True, padx=(0,10))
-        self.question_entry.bind("<Return>", lambda event: self.ask_question())
+
+        self.placeholder_text = "Type your question here."
+        self.question_entry = tk.Entry(self.bottom_frame, width=80, fg="grey")
+        self.question_entry.insert(0, self.placeholder_text)
+        self.question_entry.pack(side="left", fill="x", expand=True, padx=(0, 10))
 
         self.ask_button = tk.Button(self.bottom_frame, text="Ask", command=self.ask_question)
         self.ask_button.pack(side="right")
+
+
+        #remove placeholder on focus, restore placeholder if it's empty binder enter to ask
+        self.question_entry.bind("<FocusIn>", self.clear_placeholder)
+        self.question_entry.bind("<FocusOut>", self.add_placeholder)
+        self.question_entry.bind("<Return>", lambda event: self.ask_question())
+
+    def clear_placeholder(self, event):
+        if self.question_entry.get() == self.placeholder_text:
+            self.question_entry.delete(0, tk.END)
+            self.question_entry.config(fg="black")
+
+    def add_placeholder(self, event):
+        if not self.question_entry.get():
+            self.question_entry.insert(0, self.placeholder_text)
+            self.question_entry.config(fg="grey")
 
 
 
@@ -126,12 +132,6 @@ class PDFQAAPP:
         if not file_path:
             return
         
-        log_name = simpledialog.askstring("Log File", "Enter log file name:")
-        if not log_name:
-            return
-        if not log_name.endswith(".txt"):
-            log_name += ".txt"
-        self.log_file = log_name
 
         self.output_area.insert(tk.END, "reading PDF...\n")
         self.progress.start()
@@ -164,8 +164,9 @@ class PDFQAAPP:
         if not query:
             return
         
-        self.output_area.insert(tk.END, f"You: {query}\n")
-        self.conversation.append(f"You: {query}")
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.output_area.insert(tk.END, f"[{timestamp}]You: {query}\n")
+        self.conversation.append(f"[{timestamp}]\nYou: {query}")
         self.question_entry.delete(0, tk.END)
         self.progress.start()
 
@@ -173,14 +174,18 @@ class PDFQAAPP:
             try:
                 answer = self.qa_chain.invoke({"query": query})["result"]
                 wrapped = "\n".join(textwrap.fill(p, WRAP) for p in answer.split('\n'))
-                self.output_area.insert(tk.END, f"Llama: \n{wrapped}\n\n")
-                self.conversation.append(f"Llama\n{wrapped}")
-                if self.log_file:
-                    log_interaction(self.log_file, query, answer)
+
+                def update_ui():
+                    response_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    self.output_area.insert(tk.END, f"[{response_time}]Llama: \n{wrapped}\n\n")
+                    self.conversation.append(f"[{response_time}]Llama\n{wrapped}{'+' * WRAP}")
+                    self.progress.stop()
+
+                self.root.after(0, update_ui)
             except Exception as e:
-                self.output_area.insert(tk.END, f"Error: {e}\n")
-            finally:
-                self.progress.stop()
+                self.root.after(0, lambda: self.output_area.insert(tk.END, f"Error: {e}\n"))
+                self.root.after(0, self.progress.stop)
+
 
         threading.Thread(target=run_query).start()
 

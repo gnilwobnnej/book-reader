@@ -28,7 +28,14 @@ Can be used to read other pdf's, it's looking for a file labled 'book.pdf', that
 2. made it so that the user can upload any pdf with ease
 3. have it so that users can save the text file of the conversation.
 
+## UPDATE 5/23/2025
+1. Figured out how to get rid of it saving twice
+2. added timestamps to the export and the chat window.
+3. added placeholder text. 
+4. tidy up the code a bit.
+
 ## TODO LIST
-- [ ] fix it so that it doesn't save the chat first off and export save a separate chat
+- [x] fix it so that it doesn't save the chat first off and export save a separate chat
 - [ ] update the gui so it looks better
 - [ ] try a different book
+- [ ] add a drop down so you can use different models
