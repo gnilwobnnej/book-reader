@@ -34,6 +34,9 @@ Can be used to read other pdf's, it's looking for a file labled 'book.pdf', that
 3. added placeholder text. 
 4. tidy up the code a bit.
 
+## UPDATE 5/26/2025
+Made a new program that utilizes Streamlit called streamlit_books.py
+
 ## TODO LIST
 - [x] fix it so that it doesn't save the chat first off and export save a separate chat
 - [ ] update the gui so it looks better
